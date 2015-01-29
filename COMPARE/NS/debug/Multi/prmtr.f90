@@ -1,7 +1,7 @@
 module prmtr
 implicit none
 integer         ,parameter::     xin=0
-integer         ,parameter::    xMax=5e1
+integer         ,parameter::    xMax=2e1
 integer         ,parameter::     yin=0
 integer         ,parameter::    yMax=1e1
 integer         ,parameter::     zin=0
@@ -10,7 +10,10 @@ integer         ,parameter::     tin=1
 integer         ,parameter::    tMax=5e5
 integer         ,parameter::    prtl=14e0
 integer         ,parameter::     Dmn=1
-integer         ,parameter::out_freq=1e0
+integer         ,parameter::out_freq=1e1
+integer         ,parameter::    ob_x=2.5e1
+integer         ,parameter::    ob_y=2.5e1
+integer         ,parameter::    ob_z=2.5e1
 double precision,parameter::      uo=2d-1
 double precision,parameter::      TH=1d0
 double precision,parameter::      TC=0d0

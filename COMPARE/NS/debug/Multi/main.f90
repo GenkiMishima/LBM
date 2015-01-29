@@ -6,8 +6,7 @@ print *,'Renolds',Re,'alpha',alpha
 call IC
 print *,'out_freq',out_freq
 print *,'LBM'
-do t=tin,4
-!do t=tin,tMax
+do t=tin,tMax
 time=dble(t)*dt
   call collision
   call streaming

@@ -45,7 +45,7 @@ implicit none
        call vtk_scalar(  v_mat,"VVelo")
        call vtk_scalar(  w_mat,"WVelo")
        !call vtk_scalar(  T_mat,"Energ")
-       !call vtk_vector(u_mat,v_mat,"Velocity")
+       call vtk_vector(u_mat,v_mat,w_mat,"Velocity")
        close(66)
        open(15,file="restart.bin",form="unformatted")
           write(15) time
@@ -109,22 +109,22 @@ use post_prmtr
    enddo
    write(66,*)
 end subroutine vtk_scalar
-!subroutine vtk_vector(arr1,arr2,arr3,title)
-!use prmtr
-!use post_prmtr
-!  implicit none
-!  integer i,j,k
-!  double precision,dimension(bis:bie,bjs:bje),intent(in)::arr1,arr2,arr3
-!  character(*),intent(in)::title
-!
-!   write(66,'(a22)') 'VECTORS '//trim(title)//' float'
-!   do k = 1, nk
-!     do j = 1, nj
-!       do i = 1, ni
-!         write(66,'(e15.7,e15.7,e15.7))') arr1(i,j,k), arr2(i,j,k), arr3(i,j,k)
-!       end do
-!     end do
-!   end do
-!   write(66,*)
-!end subroutine vtk_vector
+subroutine vtk_vector(arr1,arr2,arr3,title)
+use prmtr
+use post_prmtr
+  implicit none
+  integer i,j,k
+  double precision,dimension(bis:bie,bjs:bje,bks:bke),intent(in)::arr1,arr2,arr3
+  character(*),intent(in)::title
+
+   write(66,'(a22)') 'VECTORS '//trim(title)//' float'
+   do k = 1, nk
+     do j = 1, nj
+       do i = 1, ni
+         write(66,'(e15.7,e15.7,e15.7)') arr1(i,j,k), arr2(i,j,k), arr3(i,j,k)
+       end do
+     end do
+   end do
+   write(66,*)
+end subroutine vtk_vector
  !}}}

@@ -1,0 +1,16 @@
+Wght: 1/72$
+/*#1*/
+cx: 1$
+cy: -1$
+cz: -1$
+tmp1:u*cx+v*cy+w*cz $
+tmp2:sqrt(u^2+v^2+w^2) $
+colli1:rho*Wght*(1+3*tmp1+4.5*tmp1^2-1.5*tmp2)$
+/*#2*/
+cx: -1$
+cy: 1$
+cz: 1$
+tmp1:u*cx+v*cy+w*cz $
+tmp2:sqrt(u^2+v^2+w^2) $
+colli2:rho*Wght*(1+3*tmp1+4.5*tmp1^2-1.5*tmp2)$
+expand(colli2-colli1);

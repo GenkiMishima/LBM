@@ -110,8 +110,8 @@ end do
 do k=zMax,zin+1,-1
   do j=yin,yMax-1
     do i=xin,xMax-1
-      Fun(14,i,j,k)=Fun(14,i-1,j-1,k+1)
-      Gun(14,i,j,k)=Gun(14,i-1,j-1,k+1)
+      Fun(14,i,j,k)=Fun(14,i+1,j+1,k-1)
+      Gun(14,i,j,k)=Gun(14,i+1,j+1,k-1)
     end do
   end do
 end do

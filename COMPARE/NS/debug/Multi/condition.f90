@@ -128,16 +128,17 @@ double precision,dimension(0:8)::tmp_vec,force
 do k=zin,zMax
   do j=yin,yMax
     !X- In
-    tmp(1)=Fun(0, xin,j,k)+Fun(2, xin,j,k)+Fun(3, xin,j,k)+Fun(5, xin,j,k)+Fun(6, xin,j,k)
-    tmp(2)=Fun(4, xin,j,k)+Fun(8, xin,j,k)+Fun(11, xin,j,k)+Fun(13, xin,j,k)+Fun(14, xin,j,k)
-    tmp(3)=(tmp(1)+2d0*tmp(2))/(1d0-uo)
-    print *,tmp(3)
-    call exit
+    !tmp(1)=Fun(0, xin,j,k)+Fun(2, xin,j,k)+Fun(3, xin,j,k)+Fun(5, xin,j,k)+Fun(6, xin,j,k)
+    !tmp(2)=Fun(4, xin,j,k)+Fun(8, xin,j,k)+Fun(11, xin,j,k)+Fun(13, xin,j,k)+Fun(14, xin,j,k)
+    !tmp(3)=(tmp(1)+2d0*tmp(2))/(1d0-uo)
+    tmp(3)=Vari(1,xin,j,k)
+    !print *,tmp(3)
+    !call exit
     Fun( 1, xin,j,k)=Fun( 4, xin,j,k)+2d0/3d0*tmp(3)*uo
-    Fun( 7, xin,j,k)=Fun(11, xin,j,k)-5d-1*(Fun(2, xin,j,k)-Fun(5, xin,j,k))-5d-1*(Fun(3, xin,j,k)-Fun(6, xin,j,k))+1d0/(6d0*sqrt(2d0))*tmp(3)*uo
-    Fun( 9, xin,j,k)=Fun(13, xin,j,k)+5d-1*(Fun(2, xin,j,k)-Fun(5, xin,j,k))-5d-1*(Fun(3, xin,j,k)-Fun(6, xin,j,k))+1d0/(6d0*sqrt(2d0))*tmp(3)*uo
-    Fun(10, xin,j,k)=Fun(14, xin,j,k)-5d-1*(Fun(2, xin,j,k)-Fun(5, xin,j,k))+5d-1*(Fun(3, xin,j,k)-Fun(6, xin,j,k))+1d0/(6d0*sqrt(2d0))*tmp(3)*uo
-    Fun(12, xin,j,k)=Fun( 8, xin,j,k)+5d-1*(Fun(2, xin,j,k)-Fun(5, xin,j,k))+5d-1*(Fun(3, xin,j,k)-Fun(6, xin,j,k))+1d0/(6d0*sqrt(2d0))*tmp(3)*uo
+    Fun( 7, xin,j,k)=Fun(11, xin,j,k)+1d0/12d0*tmp(3)*(uo)
+    Fun( 9, xin,j,k)=Fun(13, xin,j,k)+1d0/12d0*tmp(3)*(uo)
+    Fun(10, xin,j,k)=Fun(14, xin,j,k)+1d0/12d0*tmp(3)*(uo)
+    Fun(12, xin,j,k)=Fun( 8, xin,j,k)+1d0/12d0*tmp(3)*(uo)
     !Scaler BCWest
     !Gun(1, xin,j,k)=wght(1)*TH+wght(3)*TH-Gun(3,xin,j,k)
     !Gun(5, xin,j,k)=wght(5)*TH+wght(7)*TH-Gun(7,xin,j,k)
@@ -175,11 +176,7 @@ end do
 
 
 do i=xin+1,xMax-1
-!do i=xin,xMax
   !Y- BounceBack
-  !Fun(2,i, yin)=Fun(4,i,yin)
-  !Fun(5,i, yin)=Fun(7,i,yin)
-  !Fun(6,i, yin)=Fun(8,i,yin)
   Fun( 2,i, yin,:)=Fun( 5,i,yin,:)
   Fun( 7,i, yin,:)=Fun(11,i,yin,:)
   Fun( 8,i, yin,:)=Fun(12,i,yin,:)
@@ -207,23 +204,54 @@ do i=xin+1,xMax-1
   Fun(12,i,:,zMax)=Fun( 8,i,:,zMax)
   Fun(13,i,:,zMax)=Fun( 9,i,:,zMax)
   Fun(10,i,:,zMax)=Fun(14,i,:,zMax)
-
-
-  !Fun(4,i,yMax,:)=Fun(2,i,yMax,:)
-  !Fun(7,i,yMax,:)=Fun(6,i,yMax,:)
-  !Fun(8,i,yMax,:)=Fun(5,i,yMax,:)
-
-  !Gun(:,i, yin,:)=-Gun(:,i,yin+1,:)
-  !Gun(:,i,yMax,:)=-Gun(:,i,yMax-1,:)
 end do
 
-!do i=50,60
-!  Fun(4,i,45)=Fun(2,i,45)
-!  Fun(7,i,45)=Fun(5,i,45)
-!  Fun(8,i,45)=Fun(6,i,45)
-!  Fun(2,i,55)=Fun(4,i,55)
-!  Fun(6,i,55)=Fun(8,i,55)
-!  Fun(5,i,55)=Fun(7,i,55)
+!!Object
+!do j=ob_y-5,ob_y+5
+!  do k=ob_z-5,ob_z+5
+!    Fun( 1,ob_x+5,j,k)=Fun( 4,ob_x+5,j,k)
+!    Fun( 7,ob_x+5,j,k)=Fun(11,ob_x+5,j,k)
+!    Fun( 9,ob_x+5,j,k)=Fun(13,ob_x+5,j,k)
+!    Fun(10,ob_x+5,j,k)=Fun(14,ob_x+5,j,k)
+!    Fun(12,ob_x+5,j,k)=Fun( 8,ob_x+5,j,k)
+!    Fun( 4,ob_x-5,j,k)=Fun( 1,ob_x-5,j,k)
+!    Fun(11,ob_x-5,j,k)=Fun( 7,ob_x-5,j,k)
+!    Fun(13,ob_x-5,j,k)=Fun( 9,ob_x-5,j,k)
+!    Fun(14,ob_x-5,j,k)=Fun(10,ob_x-5,j,k)
+!    Fun( 8,ob_x-5,j,k)=Fun(12,ob_x-5,j,k)
+!  end do
+!end do
+!do i=ob_x-5,ob_x+5
+!  do k=ob_z-5,ob_z+5
+!    !Y- BounceBack
+!    Fun( 2,i,ob_y+5,k)=Fun( 5,i,ob_y+5,k)
+!    Fun( 7,i,ob_y+5,k)=Fun(11,i,ob_y+5,k)
+!    Fun( 8,i,ob_y+5,k)=Fun(12,i,ob_y+5,k)
+!    Fun(10,i,ob_y+5,k)=Fun(14,i,ob_y+5,k)
+!    Fun(13,i,ob_y+5,k)=Fun( 9,i,ob_y+5,k)
+!    !Y+ BounceBack
+!    Fun( 5,i,ob_y-5,k)=Fun( 2,i,ob_y-5,k)
+!    Fun(11,i,ob_y-5,k)=Fun( 7,i,ob_y-5,k)
+!    Fun(12,i,ob_y-5,k)=Fun( 8,i,ob_y-5,k)
+!    Fun(14,i,ob_y-5,k)=Fun(10,i,ob_y-5,k)
+!    Fun( 9,i,ob_y-5,k)=Fun(13,i,ob_y-5,k)
+!  enddo
+!  do j=ob_y-5,ob_y+5
+!    !Z- BounceBack
+!    Fun( 3,i,j,ob_z+5)=Fun( 6,i,j,ob_z+5)
+!    Fun( 7,i,j,ob_z+5)=Fun(11,i,j,ob_z+5)
+!    Fun( 8,i,j,ob_z+5)=Fun(12,i,j,ob_z+5)
+!    Fun( 9,i,j,ob_z+5)=Fun(13,i,j,ob_z+5)
+!    Fun(14,i,j,ob_z+5)=Fun(10,i,j,ob_z+5)
+!    !Z+ BounceBack
+!    Fun( 6,i,j,ob_z-5)=Fun( 3,i,j,ob_z-5)
+!    Fun(11,i,j,ob_z-5)=Fun( 7,i,j,ob_z-5)
+!    Fun(12,i,j,ob_z-5)=Fun( 8,i,j,ob_z-5)
+!    Fun(13,i,j,ob_z-5)=Fun( 9,i,j,ob_z-5)
+!    Fun(10,i,j,ob_z-5)=Fun(14,i,j,ob_z-5)
+!  enddo
+!  !Fun(4,i,ob_y-5)=Fun(2,i,ob_y-5)
+!  !Fun(2,i,ob_y+5)=Fun(4,i,ob_y+5)
 !end do
 !do j=45,55
 !  Fun(1,60,j)=Fun(3,60,j)

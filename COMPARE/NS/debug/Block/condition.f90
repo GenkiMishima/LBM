@@ -81,9 +81,9 @@ double precision,dimension(0:8)::tmp_vec,force
 do j=yin,yMax
   !BounceBack BCWest
   tmp(1)=(Fun(0, xin,j)+Fun(2, xin,j)+Fun(4, xin,j)+2d0*(Fun(3, xin,j)+Fun(6, xin,j)+Fun(7, xin,j)))/(1d0-uo)
-  Fun(1, xin,j)=Fun(3, xin,j)+2d0/3d0*tmp(1)*uo
-  Fun(5, xin,j)=Fun(7, xin,j)-5d-1*(Fun(2, xin,j)-Fun(4, xin,j))+1d0/6d0*tmp(1)*uo
-  Fun(8, xin,j)=Fun(6, xin,j)+5d-1*(Fun(2, xin,j)-Fun(4, xin,j))+1d0/6d0*tmp(1)*uo
+  Fun(1, xin,j)=Fun(3, xin,j)+4d0/3d0*tmp(1)*uo
+  Fun(5, xin,j)=Fun(7, xin,j)+1d0/6d0*tmp(1)*uo
+  Fun(8, xin,j)=Fun(6, xin,j)+1d0/6d0*tmp(1)*uo
   !Scaler BCWest
   Gun(1, xin,j)=wght(1)*TH+wght(3)*TH-Gun(3,xin,j)
   Gun(5, xin,j)=wght(5)*TH+wght(7)*TH-Gun(7,xin,j)
@@ -97,8 +97,12 @@ do j=yin,yMax
     Fun(:,xin,j)=Fun(:,xin,j)/tmp(1)
 end do
 
-do j=yin,yMax
+do j=yin+1,yMax-1
   !BounceBack BCEast
+  !tmp(1)=(Fun(0,xMax,j)+Fun(2,xMax,j)+Fun(4,xMax,j)+2d0*(Fun(1,xMax,j)+Fun(5,xMax,j)+Fun(8,xMax,j)))/(1d0-uo)
+  !Fun(3,xMax,j)=Fun(1,xMax,j)-2d0/3d0*tmp(1)*uo
+  !Fun(7,xMax,j)=Fun(5,xMax,j)-1d0/6d0*tmp(1)*uo
+  !Fun(6,xMax,j)=Fun(8,xMax,j)-1d0/6d0*tmp(1)*uo
   Fun(:,xMax,j)=Fun(:,xMax-1,j)
   !Scaler BCEast
   Gun(3,xMax,j)=Gun(3,xMax-1,j)
