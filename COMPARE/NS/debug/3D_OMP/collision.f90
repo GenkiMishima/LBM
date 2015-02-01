@@ -3,12 +3,14 @@ use prmtr
 use vrble
 implicit none
 integer la
-double precision tmp(9),tmp_rho,tmp_u,tmp_v,tmp_w,tmp_T,beta
-double precision,dimension(0:prtl)::tmp_vel,force,tmp_gx,tmp_gy,tmp_gz
+double precision tmp(5),tmp_rho,tmp_u,tmp_v,tmp_w,tmp_T,beta
+double precision,dimension(0:prtl)::tmp_vel,force,Gso
 double precision,dimension(0:prtl,10)::tmp_vec
+!$omp parallel do shared(Fun,k) &
+!$omp           ,private(i,j,tmp_rho,tmp_u,tmp_v,tmp_w &
+!$omp                   ,tmp_T,tmp,tmp_vel,Feq)
 do k=zin,zMax
   do j=yin,yMax
-    !open(50,file='temp.d')
     do i=xin,xMax
       tmp_rho=Vari(1,i,j,k)
         tmp_u=Vari(2,i,j,k)
@@ -56,20 +58,22 @@ do k=zin,zMax
       tmp(5)=2d0*mu*dwdz1
       tmp(6)=2d0*mu*dwdz2
       tmp_gz(:)=cz(:)*(tmp(1)-tmp(2)+tmp(3)-tmp(4)+tmp(5)-tmp(6))
-      tmp_vec(:,9)=3d0*wght(:)*1d0/tmp_rho*(tmp_gx(:)+tmp_gy(:)+tmp_gz(:))*dx
+      Gso(:)=3d0*wght(:)*1d0/tmp_rho*(tmp_gx(:)+tmp_gy(:)+tmp_gz(:))*dx
 
       tmp_vel(:)=tmp_u*cx(:)+tmp_v*cy(:)+tmp_w*cz(:)
-      tmp(9)=tmp_u**2+tmp_v**2+tmp_w**2
+      tmp(1)=tmp_u**2+tmp_v**2+tmp_w**2
 
+      Feq(:,i,j,k)=tmp_rho*wght(:)*(1d0+3d0*tmp_vel(:)+4.5d0*tmp_vel(:)**2-1.5d0*tmp(1))
       Geq(:,i,j,k)=wght(:)*tmp_T*(1d0+(cx(:)*tmp_u+cy(:)*tmp_v)/cs(:)**2)
       Geq(0,i,j,k)=wght(0)*tmp_T!*(1d0+(cx(0)*Uvel+cy(0)*Vvel)/cs(0)**2)
 
       Feq(:,i,j,k)=Hght(:)*tmp_phi+fght(:)*(po-kf*tmp_phi*
       !Feq(:,i,j,k)=tmp_rho*fght(:)*(1d0+3d0*tmp_vel(:)+4.5d0*tmp_vel(:)**2-1.5d0*tmp(9))
       Fun(:,i,j,k)=omegam*Feq(:,i,j,k)+(1d0-omegam)*Fun(:,i,j,k)
-      Gun(:,i,j,k)=omegas*Geq(:,i,j,k)+(1d0-omegas)*Gun(:,i,j,k)+tmp_vec(:,9)
+      Gun(:,i,j,k)=omegam*Geq(:,i,j,k)+(1d0-omegam)*Gun(:,i,j,k)+Gso(:)
     end do
     
   end do
 end do
+!$omp end parallel do
 end subroutine collision
