@@ -1,6 +1,5 @@
 OUTPUT  :=postprocess
-FAST    := -parallel -xHOST -O3 -static -ipo 
-OMP     :=-openmp
+FAST    :=-fast -parallel
 DEBUG   :=-check -traceback
 COMP    :=ifort
 

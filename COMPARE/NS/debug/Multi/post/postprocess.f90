@@ -21,24 +21,18 @@ implicit none
    close(50)
    do time=time_ini,10
        write(tmpstring,'(i3.3)') time
-       !$omp parallel sections
-       !$omp section
        open(66,file='../data/density_'//trim(tmpstring)//'.d')
        read(66,*) (((rho_mat(i,j,k),i=1,ni),j=1,nj),k=1,nk)
        close(66)
-       !$omp section
        open(66,file='../data/U_Velocity_'//trim(tmpstring)//'.d')
        read(66,*) (((u_mat(i,j,k),i=1,ni),j=1,nj),k=1,nk)
        close(66)
-       !$omp section
        open(66,file='../data/V_Velocity_'//trim(tmpstring)//'.d')
        read(66,*) (((v_mat(i,j,k),i=1,ni),j=1,nj),k=1,nk)
        close(66)
-       !$omp section
        open(66,file='../data/W_Velocity_'//trim(tmpstring)//'.d')
        read(66,*) (((w_mat(i,j,k),i=1,ni),j=1,nj),k=1,nk)
        close(66)
-       !$omp end parallel sections
        !open(66,file='../data/Energy_'//trim(tmpstring)//'.d')
        !read(66,*) ((T_mat(i,j),i=1,ni),j=1,nj)
        !close(66)

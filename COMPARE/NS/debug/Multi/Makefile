@@ -1,14 +1,12 @@
 OUTPUT  :=main
-FAST    :=-parallel -xHOST -O3 -static -ipo 
-OMP     :=-openmp
+FAST    :=-parallel -fast
 DEBUG   :=-check -traceback
+OMP     :=-openmp
 COMP    :=ifort
 
 #COMP :=$(COMP) $(DEBUG)
-#COMP :=$(COMP) $(OMP)
-#COMP :=$(COMP) $(FAST)
-COMP :=$(COMP) $(FAST) $(OMP)
-COMPOUT :=$(COMP) $(OMP)
+COMP :=$(COMP) $(OMP)
+#COMP :=$(COMP) $(FAST) $(OMP)
 HEAD = prmtr.o vrble.o
 SUB  = condition.o collision.o streaming.o output.o
 

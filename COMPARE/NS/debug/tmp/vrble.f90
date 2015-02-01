@@ -1,7 +1,7 @@
 module vrble
 use prmtr
 implicit none
-integer i,j,t
+integer i,j,k,t
 integer con
 double precision time
 double precision omegam,omegas,csp,beta

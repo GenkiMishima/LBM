@@ -38,8 +38,8 @@ write(50,*) dx*dble(ob_x-ob_size),dy*dble(ob_y+ob_size),dz*dble(ob_z+ob_size) !6
 write(50,*) dx*dble(ob_x+ob_size),dy*dble(ob_y+ob_size),dz*dble(ob_z+ob_size) !7
 close(50)
 
-!!$omp parallel do shared(j),private(tmp,i)
-!!$omp end parallel do 
+
+
 omegam= 1d0/(3d0*nu+5d-1)
 omegas= 1d0/(3d0*alpha+5d-1)
 wght( 0)=2d0/9d0
@@ -57,6 +57,8 @@ wght(11)=1d0/72d0
 wght(12)=1d0/72d0
 wght(13)=1d0/72d0
 wght(14)=1d0/72d0
+!fght( :)=3d0*wght(:)
+!fght( 0)=-7d0/3d0
 
   cx( 0)= 0d0
   cx( 1)= 1d0
@@ -137,7 +139,6 @@ implicit none
 integer la
 double precision tmp(5)
 double precision,dimension(0:8)::tmp_vec,force
-!$omp parallel do shared(Fun,k),private(j,tmp)
 do k=zin,zMax
   do j=yin,yMax
     !X- In
@@ -152,8 +153,6 @@ do k=zin,zMax
     Fun(12, xin,j,k)=Fun( 8, xin,j,k)+1d0/12d0*tmp(3)*(uo)
   end do
 end do
-!$omp end parallel do
-!$omp parallel do shared(Fun,k),private(i,j,tmp)
 do k=zin,zMax
   do j=yin,yMax
       tmp(1)=0d0
@@ -163,15 +162,11 @@ do k=zin,zMax
       Fun(:,xin,j,k)=Fun(:,xin,j,k)/tmp(1)
   end do
 end do
-!$omp end parallel do
 
-!$omp parallel do shared(Fun)
 do j=yin,yMax
   !x+ Out
   Fun(:,xMax,j,:)=Fun(:,xMax-1,j,:)
 end do
-!$omp end parallel do
-!$omp parallel do shared(Fun,k),private(i,j,tmp)
 do k=zin,zMax
   do j=yin,yMax
       tmp(1)=0d0
@@ -181,11 +176,9 @@ do k=zin,zMax
       Fun(:,xMax,j,k)=Fun(:,xMax,j,k)/tmp(1)
   end do
 end do
-!$omp end parallel do
 
 
 
-!$omp parallel do shared(Fun)
 do i=xin+1,xMax-1
   !Y- BounceBack
   Fun( 2,i, yin,:)=Fun( 5,i,yin,:)
@@ -216,10 +209,125 @@ do i=xin+1,xMax-1
   Fun(13,i,:,zMax)=Fun( 9,i,:,zMax)
   Fun(10,i,:,zMax)=Fun(14,i,:,zMax)
 end do
-!$omp end parallel do
 
-!Object{{{
-!$omp parallel do shared(Fun,j),private(k)
+!!Object
+!do j=ob_y-5,ob_y+5
+!  do k=ob_z-5,ob_z+5
+!    Fun( 1,ob_x+5,j,k)=Fun( 4,ob_x+5,j,k)
+!    Fun( 7,ob_x+5,j,k)=Fun(11,ob_x+5,j,k)
+!    Fun( 9,ob_x+5,j,k)=Fun(13,ob_x+5,j,k)
+!    Fun(10,ob_x+5,j,k)=Fun(14,ob_x+5,j,k)
+!    Fun(12,ob_x+5,j,k)=Fun( 8,ob_x+5,j,k)
+!    Fun( 4,ob_x-5,j,k)=Fun( 1,ob_x-5,j,k)
+!    Fun(11,ob_x-5,j,k)=Fun( 7,ob_x-5,j,k)
+!    Fun(13,ob_x-5,j,k)=Fun( 9,ob_x-5,j,k)
+!    Fun(14,ob_x-5,j,k)=Fun(10,ob_x-5,j,k)
+!    Fun( 8,ob_x-5,j,k)=Fun(12,ob_x-5,j,k)
+!  end do
+!end do
+!do i=ob_x-5,ob_x+5
+!  do k=ob_z-5,ob_z+5
+!    !Y- BounceBack
+!    Fun( 2,i,ob_y+5,k)=Fun( 5,i,ob_y+5,k)
+!    Fun( 7,i,ob_y+5,k)=Fun(11,i,ob_y+5,k)
+!    Fun( 8,i,ob_y+5,k)=Fun(12,i,ob_y+5,k)
+!    Fun(10,i,ob_y+5,k)=Fun(14,i,ob_y+5,k)
+!    Fun(13,i,ob_y+5,k)=Fun( 9,i,ob_y+5,k)
+!    !Y+ BounceBack
+!    Fun( 5,i,ob_y-5,k)=Fun( 2,i,ob_y-5,k)
+!    Fun(11,i,ob_y-5,k)=Fun( 7,i,ob_y-5,k)
+!    Fun(12,i,ob_y-5,k)=Fun( 8,i,ob_y-5,k)
+!    Fun(14,i,ob_y-5,k)=Fun(10,i,ob_y-5,k)
+!    Fun( 9,i,ob_y-5,k)=Fun(13,i,ob_y-5,k)
+!  enddo
+!  do j=ob_y-5,ob_y+5
+!    !Z- BounceBack
+!    Fun( 3,i,j,ob_z+5)=Fun( 6,i,j,ob_z+5)
+!    Fun( 7,i,j,ob_z+5)=Fun(11,i,j,ob_z+5)
+!    Fun( 8,i,j,ob_z+5)=Fun(12,i,j,ob_z+5)
+!    Fun( 9,i,j,ob_z+5)=Fun(13,i,j,ob_z+5)
+!    Fun(14,i,j,ob_z+5)=Fun(10,i,j,ob_z+5)
+!    !Z+ BounceBack
+!    Fun( 6,i,j,ob_z-5)=Fun( 3,i,j,ob_z-5)
+!    Fun(11,i,j,ob_z-5)=Fun( 7,i,j,ob_z-5)
+!    Fun(12,i,j,ob_z-5)=Fun( 8,i,j,ob_z-5)
+!    Fun(13,i,j,ob_z-5)=Fun( 9,i,j,ob_z-5)
+!    Fun(10,i,j,ob_z-5)=Fun(14,i,j,ob_z-5)
+!  enddo
+!  !Fun(4,i,ob_y-5)=Fun(2,i,ob_y-5)
+!  !Fun(2,i,ob_y+5)=Fun(4,i,ob_y+5)
+!end do
+!!do j=45,55
+!!  Fun(1,60,j)=Fun(3,60,j)
+!!  Fun(5,60,j)=Fun(7,60,j)
+!!  Fun(8,60,j)=Fun(6,60,j)
+!!  Fun(3,50,j)=Fun(1,50,j)
+!!  Fun(7,50,j)=Fun(5,50,j)
+!!  Fun(6,50,j)=Fun(8,50,j)
+!!end do
+!!
+!do k=ob_z-4,ob_z+4
+!  do j=ob_y-4,ob_y+4
+!    do i=ob_x-4,ob_x+4
+!      Fun(:,i,j,k)=wght(:)*Vari(1,i,j,k)
+!    end do 
+!  end do 
+!end do 
+
+end subroutine BC
+!}}}
+subroutine set_vari!{{{
+use prmtr
+use vrble
+implicit none
+integer la
+double precision tmp(5)
+do k=zin,zMax
+ do j=yin,yMax
+   do i=xin,xMax
+     tmp(1)=0d0
+     do la=0,prtl
+       tmp(1)=tmp(1)+Fun(la,i,j,k)
+     end do
+     Vari(1,i,j,k)=tmp(1)
+   end do
+ end do
+end do
+do k=zin,zMax
+  do j=yin,yMax
+    do i=xin,xMax
+      tmp(2)=0d0
+      tmp(3)=0d0
+      tmp(4)=0d0
+      do la=0,prtl
+        tmp(2)=tmp(2)+Fun(la,i,j,k)*cx(la)
+        tmp(3)=tmp(3)+Fun(la,i,j,k)*cy(la)
+        tmp(4)=tmp(4)+Fun(la,i,j,k)*cz(la)
+      end do
+      Vari(2,i,j,k)=tmp(2)/Vari(1,i,j,k)
+      Vari(3,i,j,k)=tmp(3)/Vari(1,i,j,k)
+      Vari(4,i,j,k)=tmp(4)/Vari(1,i,j,k)
+      tmp(5)=0d0
+      do la=0,prtl
+        tmp(5)=tmp(5)+Fun(la,i,j,k)*(cx(la)**2+cy(la)**2+cz(la)**2)
+      end do
+      tmp(1)=Vari(2,i,j,k)**2+Vari(3,i,j,k)**2+Vari(4,i,j,k)**2
+      Vari(5,i,j,k)=5d-1*(tmp(5)/Vari(1,i,j,k)-tmp(1))
+      
+    end do
+  end do
+end do
+
+end subroutine set_vari
+!}}}
+subroutine OBJECT !{{{
+use prmtr
+use vrble
+implicit none
+integer la
+double precision tmp(5)
+double precision,dimension(0:8)::tmp_vec,force
+!Object
 do j=ob_y-5,ob_y+5
   do k=ob_z-5,ob_z+5
     Fun( 1,ob_x+5,j,k)=Fun( 4,ob_x+5,j,k)
@@ -234,8 +342,6 @@ do j=ob_y-5,ob_y+5
     Fun( 8,ob_x-5,j,k)=Fun(12,ob_x-5,j,k)
   end do
 end do
-!$omp end parallel do
-!$omp parallel do shared(Fun,i),private(j,k)
 do i=ob_x-5,ob_x+5
   do k=ob_z-5,ob_z+5
     !Y- BounceBack
@@ -268,7 +374,6 @@ do i=ob_x-5,ob_x+5
   !Fun(4,i,ob_y-5)=Fun(2,i,ob_y-5)
   !Fun(2,i,ob_y+5)=Fun(4,i,ob_y+5)
 end do
-!$omp end parallel do
 !do j=45,55
 !  Fun(1,60,j)=Fun(3,60,j)
 !  Fun(5,60,j)=Fun(7,60,j)
@@ -285,55 +390,6 @@ do k=ob_z-4,ob_z+4
     end do 
   end do 
 end do 
-!}}}
 
-end subroutine BC
-!}}}
-subroutine set_vari!{{{
-use prmtr
-use vrble
-implicit none
-integer la
-double precision tmp(5)
-!$omp parallel do shared(Vari,k),private(i,j,tmp)
-do k=zin,zMax
- do j=yin,yMax
-   do i=xin,xMax
-     tmp(1)=0d0
-     do la=0,prtl
-       tmp(1)=tmp(1)+Fun(la,i,j,k)
-     end do
-     Vari(1,i,j,k)=tmp(1)
-   end do
- end do
-end do
-!$omp end parallel do
-!$omp parallel do shared(Vari,k),private(i,j,la,tmp)
-do k=zin,zMax
-  do j=yin,yMax
-    do i=xin,xMax
-      tmp(2)=0d0
-      tmp(3)=0d0
-      tmp(4)=0d0
-      do la=0,prtl
-        tmp(2)=tmp(2)+Fun(la,i,j,k)*cx(la)
-        tmp(3)=tmp(3)+Fun(la,i,j,k)*cy(la)
-        tmp(4)=tmp(4)+Fun(la,i,j,k)*cz(la)
-      end do
-      Vari(2,i,j,k)=tmp(2)/Vari(1,i,j,k)
-      Vari(3,i,j,k)=tmp(3)/Vari(1,i,j,k)
-      Vari(4,i,j,k)=tmp(4)/Vari(1,i,j,k)
-      tmp(5)=0d0
-      do la=0,prtl
-        tmp(5)=tmp(5)+Fun(la,i,j,k)*(cx(la)**2+cy(la)**2+cz(la)**2)
-      end do
-      tmp(1)=Vari(2,i,j,k)**2+Vari(3,i,j,k)**2+Vari(4,i,j,k)**2
-      Vari(5,i,j,k)=5d-1*(tmp(5)/Vari(1,i,j,k)-tmp(1))
-      
-    end do
-  end do
-end do
-!$omp end parallel do
-
-end subroutine set_vari
+end subroutine OBJECT
 !}}}
